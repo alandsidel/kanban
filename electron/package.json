@@ -29,7 +29,7 @@
 
     "bump": "npm run check-git && npm version patch --no-git-tag-version",
     "tag": "node -e \"const pkg=require('./package.json'); require('child_process').execSync(`git tag electron-v${pkg.version}`, {stdio:'inherit'})\"",
-    "commit-version": "node -e \"const pkg=require('./package.json'); require('child_process').execSync(`git add package.json && git commit -m 'bump electron version to ${pkg.version}'`, {stdio:'inherit'})\"",
+    "commit-version": "node -e \"const {execSync} = require('child_process'); const pkg=require('./package.json'); execSync('git add package.json', {stdio:'inherit'}); execSync(`git commit -m 'bump electron version to ${pkg.version}'`, {stdio:'inherit'})\"",
 
     "release": "npm run check-server-build && npm run package && npm run bump && npm run commit-version && npm run tag"
   },
