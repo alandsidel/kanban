@@ -18,7 +18,7 @@
     "check-git": "node -e \"const {execSync} = require('child_process'); try { const status = execSync('git status --porcelain', {encoding: 'utf8'}); if (status.trim()) { console.error('Working directory not clean'); process.exit(1); } const branch = execSync('git branch --show-current', {encoding: 'utf8'}).trim(); if (branch !== 'master') { console.error('Not on master branch'); process.exit(1); } } catch (e) { console.error('Git check failed:', e.message); process.exit(1); }\"",
     "bump": "npm run check-git && npm version patch --no-git-tag-version",
     "tag": "node -e \"const pkg=require('./package.json'); require('child_process').execSync(`git tag kanban-app-v${pkg.version}`, {stdio:'inherit'})\"",
-    "commit-version": "node -e \"const {execSync} = require('child_process'); const pkg=require('./package.json'); execSync('git add package.json package-lock.json', {stdio:'inherit'}); execSync('git commit -m \\\"bump kanban-app version to ' + pkg.version + '\\\"', {stdio:'inherit'})\"",
+    "commit-version": "node -e \"const {execSync} = require('child_process'); const pkg=require('./package.json'); execSync('git add package.json package-lock.json', {stdio:'inherit'}); execSync('git commit -m \\\"bump version to ' + pkg.version + '\\\"', {stdio:'inherit'})\"",
     "release": "npm run build && npm run bump && npm run commit-version && npm run tag"
   },
   "dependencies": {
