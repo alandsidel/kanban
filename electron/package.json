@@ -1,6 +1,6 @@
 {
   "name": "kanban",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Kanban board desktop app",
   "author": {
     "name": "Allen Landsidel",
@@ -14,23 +14,17 @@
     "clean:server": "rm -rf server-build",
     "clean:dist": "rm -rf dist",
     "clean": "npm run clean:server && npm run clean:dist",
-
     "prepare:server": "node bundle-server.js",
     "build:electron": "tsc && node -e \"require('fs').renameSync('dist/main.js', 'dist/main.cjs')\"",
     "build": "npm run prepare:server && npm run build:electron",
-
     "start": "electron .",
     "watch": "tsc -w",
     "package": "npm run clean:dist && npm run build:electron && electron-builder",
-
     "check-git": "node -e \"const {execSync} = require('child_process'); try { const status = execSync('git status --porcelain', {encoding: 'utf8'}); if (status.trim()) { console.error('Working directory not clean'); process.exit(1); } const branch = execSync('git branch --show-current', {encoding: 'utf8'}).trim(); if (branch !== 'master') { console.error('Not on master branch'); process.exit(1); } } catch (e) { console.error('Git check failed:', e.message); process.exit(1); }\"",
-
     "check-server-build": "node -e \"const fs = require('fs'); if (!fs.existsSync('../server/build')) { console.error('Server not built. Run: cd ../server && npm run build-release'); process.exit(1); }\"",
-
     "bump": "npm run check-git && npm version patch --no-git-tag-version",
     "tag": "node -e \"const pkg=require('./package.json'); require('child_process').execSync(`git tag electron-v${pkg.version}`, {stdio:'inherit'})\"",
     "commit-version": "node -e \"const {execSync} = require('child_process'); const pkg=require('./package.json'); execSync('git add package.json package-lock.json', {stdio:'inherit'}); execSync('git commit -m \\\"bump kanban version to ' + pkg.version + '\\\"', {stdio:'inherit'})\"",
-
     "release": "npm run check-server-build && npm run package && npm run bump && npm run commit-version && npm run tag"
   },
   "build": {
@@ -41,19 +35,49 @@
     ],
     "extraResources": "server-build",
     "win": {
-      "target": ["nsis"]
+      "target": [
+        "nsis"
+      ]
     },
     "linux": {
       "target": [
-        {"target": "AppImage", "arch": ["x64"]},
-        {"target": "deb", "arch": ["x64"]},
-        {"target": "rpm", "arch": ["x64"]},
-        {"target": "tar.gz", "arch": ["x64"]}
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "rpm",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "tar.gz",
+          "arch": [
+            "x64"
+          ]
+        }
       ],
       "category": "Office"
     },
     "mac": {
-      "target": [{"target": "dmg", "arch": ["x64", "arm64"]}],
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
       "category": "public.app-category.productivity"
     },
     "nsis": {
