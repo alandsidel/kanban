@@ -1,3 +1,4 @@
+### About
 This project is a monorepo for a simple kanban application.  The application itself is written as a traditional client/server project, with the server in the `./server` directory and the client in the `./kanban-app` directory.  The server is a node.js Express server, while the client is a React webapp.
 
 It has been wrapped in an Electron app as well for standalone usage on Windows, macOS, and Linux, bundled with electron-builder.
@@ -12,4 +13,24 @@ I think it would have taken me longer to learn Electron myself, specifically ele
 
 Including the node.js Express server was a challenge thanks to the widespread use of native modules such as `better-sqlite3`, as well as dynamic node.js requires like `fs`.
 
-This entire project is released under the terms of the MIT license, availble in the LICENSE file.
+This entire project is released under the terms of the 0BSD license, availble in the LICENSE file.
+
+### Running the client/server
+Currently there are no artifacts or packages for this, but I intend to change that soon.  Until then, simply get a copy of the source through your favorite method, be that cloning, downloading the archive, or doing a checkout, and build the client and server by running `npm run build` in the `server` directory.  This will build the React webapp, copy it into the server directory, and build the server.  From here you can run the server in dev or prod mode as you like, with `npm run dev` or `npm run run` -- I know this last one is a bit weird, I'll change it.
+
+Overrides for things like port, bucket names, and CORS origins can be set in a `.env` file.  Look in `server/src/consts.mjs` for all of the available vars, there aren't many.
+
+Buckets are created upon creation of a new project within the app; changing this setting does not affect existing projects or their buckets.
+
+On first run, the console will output a randomly generated password for the `admin` user.
+
+#### Known issues
+This project was originally created with a client/server model in mind, however when I decided to make it public I thought it would be more useful if it were a standalone, self-contained, single user app so I stopped working on the multiuser features.
+
+Because of this there is currently no way to change or reset passwords, add or delete users, or any of the other features you'd expect from a multiuser app aside from being able to log in.  All these features will probably come later if just to make this demo more feature complete.
+
+### Running the standalone version
+Just poke your head into the releases on the right of the project homepage and download whichever is appropriate for your environment.  There are multiple formats available, targeting macOS, Windows, and Linux.  Only the Windows installer releases are tested by me at present.
+
+### Contributing
+I'm open to feature requests and bug reports, but not to pull requests at present; this project is primarily a portfolio project for me and, as such, it would be dishonest for me to include contributions from others.  By all means, make suggestions and point me towards documentation, but no PRs please.  At least for now.
