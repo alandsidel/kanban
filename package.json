@@ -1,0 +1,21 @@
+{
+  "name": "kanban-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build:app": "cd kanban-app && npm run build",
+    "build:server": "cd server && npm run build",
+    "build:electron": "cd electron && npm run build",
+    "build:all": "npm run build:app && npm run build:server && npm run build:electron",
+
+    "dev:app": "cd kanban-app && npm run dev",
+    "dev:server": "cd server && npm run dev",
+    "dev:electron": "cd electron && npm run start",
+
+    "release:app": "cd kanban-app && npm run release",
+    "release:server": "cd server && npm run release",
+    "release:electron": "cd electron && npm run release",
+
+    "install:all": "npm ci && cd kanban-app && npm ci && cd ../server && npm ci && cd ../electron && npm ci"
+  }
+}
