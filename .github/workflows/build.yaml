@@ -6,11 +6,15 @@ on:
     paths:
       - '.github/workflows/**'
       - 'electron/**'
+      - 'server/**'
+      - 'kanban-app/**'
   pull_request:
     branches: [ master ]
     paths:
       - '.github/workflows/**'
       - 'electron/**'
+      - 'server/**'
+      - 'kanban-app/**'
   workflow_dispatch:  # Allows manual triggering
 
 jobs:

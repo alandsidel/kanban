@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'  # Triggers on version tags like v1.0.0, v1.0.1, etc.
+      - 'electron-v*'  # Only trigger on electron releases
 
 jobs:
   build-and-release:
@@ -41,31 +41,24 @@ jobs:
           electron/package-lock.json
           kanban-app/package-lock.json
 
-    - name: Install server dependencies
+    - name: Install dependencies
       run: |
-        cd server
         npm ci
+        cd server && npm ci
+        cd ../kanban-app && npm ci
+        cd ../electron && npm ci
 
-    - name: Install kanban-app dependencies
-      run: |
-        cd kanban-app
-        npm ci
-
-    - name: Install electron dependencies
-      run: |
-        cd electron
-        npm ci
+    - name: Build kanban-app
+      run: cd kanban-app && npm run build
 
     - name: Build server
-      run: |
-        cd electron
-        npm run build:server
+      run: cd server && npm run build-with-app
 
-    - name: Build and package
+    - name: Build and package electron
       run: |
         cd electron
         npm run clean:dist
-        npm run build:electron
+        npm run build
         npx electron-builder --${{ matrix.platform }}
 
     - name: Upload artifacts for release
