@@ -1,6 +1,6 @@
 {
   "name": "kanban",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Kanban board desktop app",
   "author": {
     "name": "Allen Landsidel",
@@ -22,7 +22,7 @@
     "start": "electron .",
     "watch": "tsc -w",
     "package": "npm run clean:dist && npm run build:electron && electron-builder",
-    "version": "npm version patch",
+    "bumpversion": "npm version patch",
     "tag": "node -e \"const pkg=require('./package.json'); require('child_process').execSync(`git tag v${pkg.version}`, {stdio:'inherit'})\""
   },
   "build": {
