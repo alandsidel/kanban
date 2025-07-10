@@ -16,6 +16,10 @@
     "release:server": "cd server && npm run release",
     "release:electron": "cd electron && npm run release",
 
+    "release:all": "npm run release:app && npm run release:server && npm run release:electron",
+    "release:push": "git push origin master --tags",
+    "release:full": "npm run release:all && npm run release:push",
+
     "install:all": "npm ci && cd kanban-app && npm ci && cd ../server && npm ci && cd ../electron && npm ci"
   }
 }
