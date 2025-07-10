@@ -1,7 +1,7 @@
 {
-  "name": "kanban",
+  "name": "kanban-server",
   "version": "1.0.1",
-  "description": "Kanban board desktop app",
+  "description": "Kanban board Express backend",
   "author": {
     "name": "Allen Landsidel",
     "email": "alandsidel@users.noreply.github.com"
@@ -14,9 +14,22 @@
     "clean": "rm -rf build && rm -rf node_modules && npm ci",
     "dev": "npx tsx watch --clear-screen=false src/index.ts",
     "run": "node ./build/index.js",
-    "build": "rm -rf ./src/app && cd ../kanban-app/ && npm run build && cp -R ./dist ../server/src/app && cd ../server/ && npx tsc",
-    "buildrelease": "npm run clean && npm run build && cp -R ./src/app ./build/",
-    "test": "echo \"Error: no test specified\" && exit 1"
+
+    "build": "npx tsc",
+    "build-with-app": "rm -rf ./src/app && test -d ../kanban-app/dist && cp -R ../kanban-app/dist ./src/app && npm run build && cp -R ./src/app ./build/",
+    "build-release": "npm run clean && npm run build-with-app",
+
+    "test": "echo \"Error: no test specified\" && exit 1",
+
+    "check-git": "node -e \"const {execSync} = require('child_process'); try { const status = execSync('git status --porcelain', {encoding: 'utf8'}); if (status.trim()) { console.error('Working directory not clean'); process.exit(1); } const branch = execSync('git branch --show-current', {encoding: 'utf8'}).trim(); if (branch !== 'master') { console.error('Not on master branch'); process.exit(1); } } catch (e) { console.error('Git check failed:', e.message); process.exit(1); }\"",
+
+    "check-app-build": "node -e \"const fs = require('fs'); if (!fs.existsSync('../kanban-app/dist')) { console.error('kanban-app not built. Run: cd ../kanban-app && npm run build'); process.exit(1); }\"",
+
+    "bump": "npm run check-git && npm version patch --no-git-tag-version",
+    "tag": "node -e \"const pkg=require('./package.json'); require('child_process').execSync(`git tag server-v${pkg.version}`, {stdio:'inherit'})\"",
+    "commit-version": "node -e \"const pkg=require('./package.json'); require('child_process').execSync(`git add package.json && git commit -m 'bump server version to ${pkg.version}'`, {stdio:'inherit'})\"",
+
+    "release": "npm run check-app-build && npm run build-release && npm run bump && npm run commit-version && npm run tag"
   },
   "dependencies": {
     "better-sqlite3": "11.9.1",
