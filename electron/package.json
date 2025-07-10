@@ -1,6 +1,6 @@
 {
   "name": "kanban",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Kanban board desktop app",
   "author": {
     "name": "Allen Landsidel",
@@ -34,17 +34,50 @@
       "loading.html"
     ],
     "extraResources": "server-build",
-    "win": {"target": ["nsis"]},
-    "linux": {"target": [
-        {"target": "AppImage", "arch": ["x64"]},
-        {"target": "deb", "arch": ["x64"]},
-        {"target": "rpm", "arch": ["x64"]},
-        {"target": "tar.gz", "arch": ["x64"]}
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "rpm",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "tar.gz",
+          "arch": [
+            "x64"
+          ]
+        }
       ],
       "category": "Office"
     },
     "mac": {
-      "target": [{"target": "dmg", "arch": ["x64", "arm64"]}],
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
       "category": "public.app-category.productivity"
     },
     "nsis": {
