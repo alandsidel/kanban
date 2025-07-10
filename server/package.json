@@ -1,0 +1,48 @@
+{
+  "name": "kanban",
+  "version": "1.0.1",
+  "description": "Kanban board desktop app",
+  "author": {
+    "name": "Allen Landsidel",
+    "email": "alandsidel@users.noreply.github.com"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/alandsidel/kanban/",
+  "main": "build/index.js",
+  "type": "module",
+  "scripts": {
+    "clean": "rm -rf build && rm -rf node_modules && npm ci",
+    "dev": "npx tsx watch --clear-screen=false src/index.ts",
+    "run": "node ./build/index.js",
+    "build": "rm -rf ./src/app && cd ../kanban-app/ && npm run build && cp -R ./dist ../server/src/app && cd ../server/ && npx tsc",
+    "buildrelease": "npm run clean && npm run build && cp -R ./src/app ./build/",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "better-sqlite3": "11.9.1",
+    "better-sqlite3-session-store": "0.1.0",
+    "cookie-parser": "1.4.7",
+    "cors": "2.8.5",
+    "dotenv": "16.4.7",
+    "express": "4.21.2",
+    "express-session": "1.18.1",
+    "jsonwebtoken": "9.0.2",
+    "knex": "3.1.0",
+    "scrypt-mcf": "1.1.2",
+    "tsx": "^4.20.3",
+    "uuid": "11.1.0"
+  },
+  "devDependencies": {
+    "@tsconfig/node-lts": "22.0.1",
+    "@types/better-sqlite3": "7.6.12",
+    "@types/cookie-parser": "1.4.8",
+    "@types/cors": "2.8.17",
+    "@types/express": "4.17.21",
+    "@types/express-session": "1.18.1",
+    "@types/jsonwebtoken": "9.0.9",
+    "@types/node": "22.13.13",
+    "ts-node": "10.9.2",
+    "tslib": "2.8.1",
+    "typescript": "5.8.2"
+  }
+}

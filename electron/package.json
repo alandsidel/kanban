@@ -1,0 +1,101 @@
+{
+  "name": "kanban",
+  "version": "1.0.0",
+  "description": "Kanban board desktop app",
+  "author": {
+    "name": "Allen Landsidel",
+    "email": "alandsidel@users.noreply.github.com"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/alandsidel/kanban/",
+  "main": "dist/main.cjs",
+  "type": "module",
+  "scripts": {
+    "clean:server": "rm -rf server-build",
+    "clean:dist": "rm -rf dist",
+    "clean": "npm run clean:server && npm run clean:dist",
+    "prepare:server": "node bundle-server.js",
+    "build:server": "cd ../server && npm run buildrelease",
+    "build:electron": "tsc && node -e \"require('fs').renameSync('dist/main.js', 'dist/main.cjs')\"",
+    "build": "npm run prepare:server && npm run build:electron",
+    "buildfull": "npm run clean && npm run build:server && npm run build",
+    "start": "electron .",
+    "watch": "tsc -w",
+    "package": "npm run clean:dist && npm run build:electron && electron-builder",
+    "version": "npm version patch",
+    "tag": "node -e \"const pkg=require('./package.json'); require('child_process').execSync(`git tag v${pkg.version}`, {stdio:'inherit'})\""
+  },
+  "build": {
+    "appId": "com.kanban.app",
+    "files": [
+      "dist/**/*",
+      "loading.html"
+    ],
+    "extraResources": "server-build",
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "rpm",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "tar.gz",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "category": "Office"
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "category": "public.app-category.productivity"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "menuCategory": true,
+      "runAfterFinish": false,
+      "createDesktopShortcut": true
+    }
+  },
+  "dependencies": {
+    "electron-is-dev": "^2.0.0",
+    "electron-log": "^5.4.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "electron": "^37.2.0",
+    "electron-builder": "^26.0.18",
+    "typescript": "^5.0.0"
+  }
+}
