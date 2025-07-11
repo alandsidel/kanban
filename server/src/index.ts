@@ -61,6 +61,13 @@ await db.migrate.latest({directory: migrationPath});
 //#endregion
 
 async function enforceSecurity(req:Request, res:Response, next:NextFunction) {
+  // Note that OPTIONS requests do not send credentials so CORS preflight will
+  // fail if it is protected, even if the user is logged in, so we'll explicitly
+  // allow it here.
+  if (req.method === 'OPTIONS') {
+    return next();
+  }
+
   if (req.session && req.session.username) {
     // Logged in users have some access
     if (req.session.isAdmin) {
@@ -68,7 +75,7 @@ async function enforceSecurity(req:Request, res:Response, next:NextFunction) {
       return next();
     }
 
-    // Users have access to all routes for now
+    // TODO: Users have access to all routes for now
     return next();
   } else {
     // Anonymous visitors can only do login and signup tasks
@@ -98,21 +105,28 @@ declare module 'express-session' {
 }
 
 const app = express();
+const sessionMiddleware = session({
+      store: new KnexSessionStore({
+        db: db,
+        lifetime: 60 * 60 * 24, // 24h
+        table: 'sessions'
+      }),
+      secret: consts.SECRET,
+      saveUninitialized: true,
+      resave: false,
+      rolling: true,
+      name: 'sessionid',
+      genid: () => {return uuid()}
+    });
 
 //#region middleware
-app.use(session({
-  store: new KnexSessionStore({
-    db: db,
-    lifetime: 60 * 60 * 24, // 24h
-    table: 'sessions'
-  }),
-  secret: consts.SECRET,
-  saveUninitialized: true,
-  resave: false,
-  rolling: true,
-  name: 'sessionid',
-  genid: () => {return uuid()}
-}));
+app.use((req, _res, next) => {
+  if (req.method === 'OPTIONS') {
+    return next();
+  } else {
+    return sessionMiddleware(req, _res, next);
+  }
+});
 
 if (isElectron) {
   app.use((req, _res, next) => {
@@ -122,7 +136,8 @@ if (isElectron) {
   });
 }
 app.use(enforceSecurity);
-app.use(cors({origin:consts.ORIGINS, credentials: true}));
+app.use(cors({origin: consts.ORIGINS, credentials: true}));
+app.options('*', cors()); // enable CORS options requests
 app.use(express.json());
 //#endregion
 
