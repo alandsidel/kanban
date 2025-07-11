@@ -9,14 +9,12 @@ import AppRoutes from './components/AppRoutes';
 import AutoLogin from './components/AutoLogin.tsx';
 import Login from './components/Login.tsx';
 import Navbar from './components/Navbar.tsx';
+import MultiuserMenuItems from './components/MultiuserMenuItems.tsx';
 import axios from 'axios';
 import { assignProjectState } from './lib/redux/ProjectStateSlice';
 import { showFailureNotification} from './lib/notifications.ts';
 import { useDispatch } from 'react-redux';
 import { DndContext, DragEndEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPersonWalkingDashedLineArrowRight } from '@fortawesome/free-solid-svg-icons';
-import { clearUserState } from './lib/redux/UserStateSlice';
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 import './styles/style.css';
@@ -76,18 +74,6 @@ function App() {
     }
   }
 
-  async function logout() {
-    const client = axios.create({ withCredentials: true, baseURL: consts.API_URL, validateStatus: () => true });
-    await client.get('/logout');
-
-    // There may be an error response, but we don't care.  We're trying to log out so assume it worked.
-    // What's the alternative?  To force the user to stay logged in?  The next login should overwrite
-    // their cookie and session if the logout somehow failed.
-    dispatch(clearUserState());
-    dispatch(assignProjectState([]));
-    // window.location.reload();
-  }
-
   if (!user.username) {
     return (
       <Login />
@@ -107,7 +93,7 @@ function App() {
                 <Burger opened={burgerOpened} onClick={toggleBurger} visibleFrom="sm" size="sm" />
                 <p>hello {user.username ? user.username : 'anonymous'}</p>
               </Group>
-              {!user.isElectron ? <FontAwesomeIcon onClick={logout} icon={faPersonWalkingDashedLineArrowRight} />: ''}
+              {!user.isElectron ? <MultiuserMenuItems />: ''}
             </Flex>
           </AppShell.Header>
 
