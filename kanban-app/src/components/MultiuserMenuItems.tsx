@@ -1,30 +1,33 @@
 import { consts } from '../consts.ts';
-import { faPersonWalkingDashedLineArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../lib/redux/redux-store.ts';
 import { clearUserState } from '../lib/redux/UserStateSlice';
 import { assignProjectState } from '../lib/redux/ProjectStateSlice';
 import axios from 'axios';
 
+import { faPersonWalkingDashedLineArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { faAddressBook } from '@fortawesome/free-solid-svg-icons';
+
 function MultiuserMenuItems() {
+  const user = useSelector((state: RootState) => state.userState);
   const dispatch = useDispatch();
 
   async function logout() {
     const client = axios.create({ withCredentials: true, baseURL: consts.API_URL, validateStatus: () => true });
     await client.get('/logout');
-
-    // There may be an error response, but we don't care.  We're trying to log out so assume it worked.
-    // What's the alternative?  To force the user to stay logged in?  The next login should overwrite
-    // their cookie and session if the logout somehow failed.
     dispatch(clearUserState());
     dispatch(assignProjectState([]));
-    // window.location.reload();
+  }
+
+  async function manageUsers() {
   }
 
   return(
-    <>
-      <FontAwesomeIcon onClick={logout} icon={faPersonWalkingDashedLineArrowRight} />
-    </>
+    <div>
+      <FontAwesomeIcon title="Logout"       style={{cursor: 'pointer'}} pull="right" onClick={logout}      icon={faPersonWalkingDashedLineArrowRight} />
+      {user.isAdmin ? (<FontAwesomeIcon title="Manage users" style={{cursor: 'pointer'}} pull="right" onClick={manageUsers} icon={faAddressBook} />) : ''}
+    </div>
   );
 }
 

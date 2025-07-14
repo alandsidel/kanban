@@ -75,7 +75,12 @@ async function enforceSecurity(req:Request, res:Response, next:NextFunction) {
       return next();
     }
 
-    // TODO: Users have access to all routes for now
+    // Only admin users can access admin API
+    if (req.url.indexOf('/api/admin/') === 0) {
+      // Non-admin users cannot access admin API
+      res.status(403).send('Forbidden');
+      return;
+    }
     return next();
   } else {
     // Anonymous visitors can only do login and signup tasks
@@ -90,7 +95,7 @@ async function enforceSecurity(req:Request, res:Response, next:NextFunction) {
       break;
 
       default:
-        res.status(401).send('Unauthorized');
+        res.status(403).send('Forbidden');
         return;
       break;
     }
@@ -524,6 +529,26 @@ app.post('/api/task/:taskId', async (req:Request, res:Response) => {
     }
 
     res.status(500).json(errResponse)
+    return;
+  }
+});
+//#endregion
+
+//#region admin api routes
+app.get('/api/admin/users', async (req:Request, res:Response) => {
+  try {
+    if (!req.session.isAdmin) {
+      res.status(403).send('Forbidden');
+      return;
+    }
+
+    const users = await db('users').select('username', 'is_admin').orderBy('username');
+    res.status(200).json(users);
+    return;
+
+  } catch (e) {
+    console.log(e);
+    res.status(500).send('Failed fetching users');
     return;
   }
 });
