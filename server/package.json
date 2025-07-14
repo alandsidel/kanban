@@ -1,6 +1,6 @@
 {
   "name": "kanban-server",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Kanban board Express backend",
   "author": {
     "name": "Allen Landsidel",
@@ -17,6 +17,8 @@
     "build": "npx tsc",
     "build-with-app": "rm -rf ./src/app && test -d ../kanban-app/dist && cp -R ../kanban-app/dist ./src/app && npm run build && cp -R ./src/app ./build/",
     "build-release": "npm run clean && npm run build-with-app",
+    "rebuild-electron": "npm rebuild --runtime=electron --target=37.2.0 --disturl=https://electronjs.org/headers --build-from-source",
+    "build-electron": "npm run build-with-app && npm run rebuild-electron",
     "test": "echo \"Error: no test specified\" && exit 1",
     "check-git": "node -e \"const {execSync} = require('child_process'); try { const status = execSync('git status --porcelain', {encoding: 'utf8'}); if (status.trim()) { console.error('Working directory not clean'); process.exit(1); } const branch = execSync('git branch --show-current', {encoding: 'utf8'}).trim(); if (branch !== 'master') { console.error('Not on master branch'); process.exit(1); } } catch (e) { console.error('Git check failed:', e.message); process.exit(1); }\"",
     "check-app-build": "node -e \"const fs = require('fs'); if (!fs.existsSync('../kanban-app/dist')) { console.error('kanban-app not built. Run: cd ../kanban-app && npm run build'); process.exit(1); }\"",
