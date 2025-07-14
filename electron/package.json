@@ -35,48 +35,20 @@
     ],
     "extraResources": "server-build",
     "win": {
-      "target": [
-        "nsis"
-      ]
+      "target": ["nsis"]
     },
     "linux": {
       "target": [
-        {
-          "target": "AppImage",
-          "arch": [
-            "x64"
-          ]
-        },
-        {
-          "target": "deb",
-          "arch": [
-            "x64"
-          ]
-        },
-        {
-          "target": "rpm",
-          "arch": [
-            "x64"
-          ]
-        },
-        {
-          "target": "tar.gz",
-          "arch": [
-            "x64"
-          ]
-        }
+        {"target": "AppImage", "arch": ["x64"]},
+        {"target": "deb", "arch": ["x64"]},
+        {"target": "rpm", "arch": ["x64"]},
+        {"target": "tar.gz", "arch": ["x64"]}
       ],
       "category": "Office"
     },
     "mac": {
       "target": [
-        {
-          "target": "dmg",
-          "arch": [
-            "x64",
-            "arm64"
-          ]
-        }
+        {"target": "dmg","arch": ["x64", "arm64"]}
       ],
       "category": "public.app-category.productivity"
     },
