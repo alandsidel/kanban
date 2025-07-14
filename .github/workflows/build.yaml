@@ -45,8 +45,8 @@ jobs:
     - name: Build kanban-app
       run: cd kanban-app && npm run build
 
-    - name: Build server
-      run: cd server && npm run build-with-app
+    - name: Build server for Electron
+      run: cd server && npm run build-electron
 
     - name: Build and package Linux
       run: |
@@ -93,8 +93,8 @@ jobs:
     - name: Build kanban-app
       run: cd kanban-app && npm run build
 
-    - name: Build server
-      run: cd server && npm run build-with-app
+    - name: Build server for Electron
+      run: cd server && npm run build-electron
 
     - name: Build and package macOS
       run: |
@@ -138,8 +138,8 @@ jobs:
     - name: Build kanban-app
       run: cd kanban-app && npm run build
 
-    - name: Build server
-      run: cd server && npm run build-with-app
+    - name: Build server for Electron
+      run: cd server && npm run build-electron
 
     - name: Build and package Windows
       run: |

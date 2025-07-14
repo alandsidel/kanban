@@ -1,6 +1,7 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync, copyFileSync, readdirSync, statSync } from 'fs';
 import { resolve, dirname, join } from 'path';
 import { fileURLToPath } from 'url';
+import { execSync } from 'child_process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -20,11 +21,29 @@ async function bundleServer() {
     // Copy ALL node_modules (let Electron handle it)
     await copyAllNodeModules();
 
+    // Rebuild native modules for Electron
+    await rebuildForElectron();
+
     console.log('Server prepared successfully!');
 
   } catch (error) {
     console.error('Server preparation failed:', error);
     process.exit(1);
+  }
+}
+
+async function rebuildForElectron() {
+  console.log('Rebuilding native modules for Electron...');
+
+  try {
+    execSync('npm rebuild --runtime=electron --target=37.2.0 --disturl=https://electronjs.org/headers --build-from-source', {
+      cwd: resolve(__dirname, 'server-build'),
+      stdio: 'inherit'
+    });
+    console.log('Native modules rebuilt successfully');
+  } catch (error) {
+    console.error('Failed to rebuild native modules:', error);
+    throw error;
   }
 }
 

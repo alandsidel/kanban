@@ -1,12 +1,12 @@
 import { app, BrowserWindow } from 'electron';
 import * as path from 'path';
-import { spawn } from 'child_process';
+import { fork } from 'child_process';
 import isDev from 'electron-is-dev';
 import log from 'electron-log/main';
 
 // Basic state management
 let mainWindow: BrowserWindow | null = null;
-let serverProcess: ReturnType<typeof spawn> | null = null;
+let serverProcess: ReturnType<typeof fork> | null = null;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -53,8 +53,8 @@ function startServer() {
   log.log('Starting server from:', serverPath);
   log.log('Server directory:', serverDir);
 
-  serverProcess = spawn('node', [serverPath], {
-    stdio: ['ignore', 'pipe', 'pipe'],
+  serverProcess = fork(serverPath, [], {
+    silent: true,
     env: {
       ...process.env,
       NODE_ENV: 'production',
@@ -63,8 +63,7 @@ function startServer() {
       NODE_PATH: path.join(serverDir, 'node_modules'),
       KANBAN_DB_PATH: path.join(app.getPath('userData'), 'kanban.db')
     },
-    cwd: serverDir,
-    detached: false
+    cwd: serverDir
   });
 
   log.log('Server started, PID ', serverProcess.pid);
