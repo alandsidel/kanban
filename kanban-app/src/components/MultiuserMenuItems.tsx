@@ -1,23 +1,19 @@
-import { consts } from '../consts.ts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../lib/redux/redux-store.ts';
-import { clearUserState } from '../lib/redux/UserStateSlice';
-import { assignProjectState } from '../lib/redux/ProjectStateSlice';
-import axios from 'axios';
+import { AppDispatch, RootState } from '../lib/redux/redux-store.ts';
 
 import { faPersonWalkingDashedLineArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { faAddressBook } from '@fortawesome/free-solid-svg-icons';
+import { logoutUser } from '../lib/redux/UserStateSlice.ts';
+import { clearProjectState } from '../lib/redux/ProjectStateSlice.ts';
 
 function MultiuserMenuItems() {
   const user = useSelector((state: RootState) => state.userState);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   async function logout() {
-    const client = axios.create({ withCredentials: true, baseURL: consts.API_URL, validateStatus: () => true });
-    await client.get('/logout');
-    dispatch(clearUserState());
-    dispatch(assignProjectState([]));
+    await dispatch(logoutUser());
+    dispatch(clearProjectState());
   }
 
   async function manageUsers() {
@@ -25,8 +21,18 @@ function MultiuserMenuItems() {
 
   return(
     <div>
-      <FontAwesomeIcon title="Logout"       style={{cursor: 'pointer'}} pull="right" onClick={logout}      icon={faPersonWalkingDashedLineArrowRight} />
-      {user.isAdmin ? (<FontAwesomeIcon title="Manage users" style={{cursor: 'pointer'}} pull="right" onClick={manageUsers} icon={faAddressBook} />) : ''}
+      <FontAwesomeIcon
+        title="Logout"
+        style={{cursor: 'pointer'}}
+        pull="right"
+        onClick={logout}
+        icon={faPersonWalkingDashedLineArrowRight} />
+      {user.isAdmin ? (<FontAwesomeIcon
+                         title="Manage users"
+                         style={{cursor: 'pointer'}}
+                         pull="right"
+                         onClick={manageUsers}
+                         icon={faAddressBook} />) : ''}
     </div>
   );
 }

@@ -1,17 +1,15 @@
-import { consts } from './consts.ts';
 import { useState } from 'react';
 import { AppShell, Burger, Group, Flex } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { Notifications } from '@mantine/notifications';
 import { useSelector } from 'react-redux';
-import { RootState } from './lib/redux/redux-store.ts';
+import { RootState, AppDispatch } from './lib/redux/redux-store.ts';
 import AppRoutes from './components/AppRoutes';
 import AutoLogin from './components/AutoLogin.tsx';
 import Login from './components/Login.tsx';
 import Navbar from './components/Navbar.tsx';
 import MultiuserMenuItems from './components/MultiuserMenuItems.tsx';
-import axios from 'axios';
-import { assignProjectState } from './lib/redux/ProjectStateSlice';
+import { moveTask, deleteTask } from './lib/redux/ProjectStateSlice';
 import { showFailureNotification} from './lib/notifications.ts';
 import { useDispatch } from 'react-redux';
 import { DndContext, DragEndEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
@@ -25,7 +23,7 @@ function App() {
   const [isFirstLoad, setFirstLoad] = useState(true);
   const [burgerOpened, { toggle: toggleBurger}] = useDisclosure(true);
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -53,21 +51,29 @@ function App() {
         const taskId       = event.active.data.current?.taskId;
 //TODO: Refactor this to use some data element indicating droptarget type.  bucket, trash, etc.
         if (targetId === 'trashcan') {
-          const client = axios.create({ withCredentials: true, baseURL: consts.API_URL, validateStatus: () => true });
-          const resp = await client.delete('/task/'+bucketFromId+'/'+taskId);
-          if (resp.status === 200) {
-            dispatch(assignProjectState(resp.data));
-          } else {
-            showFailureNotification('Delete failed', resp.data);
+          try {
+            const result = await dispatch(deleteTask({ taskId, bucketId: bucketFromId }));
+            if (deleteTask.rejected.match(result)) {
+              showFailureNotification('Delete failed', result.payload as string);
+            }
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          } catch (error) {
+            showFailureNotification('Delete failed', 'An unexpected error occurred');
           }
         } else if (event.over.data.current?.bucketId) {
-          const bucketToId   = event.over.data.current.bucketId;
-          const client = axios.create({ withCredentials: true, baseURL: consts.API_URL, validateStatus: () => true });
-          const resp = await client.post('/movetask/'+taskId+'/'+bucketFromId+'/'+bucketToId);
-          if (resp.status === 200) {
-            dispatch(assignProjectState(resp.data));
-          } else {
-            showFailureNotification('Move failed', resp.data);
+          const bucketToId = event.over.data.current.bucketId;
+          try {
+            const result = await dispatch(moveTask({
+              taskId,
+              fromBucketId: bucketFromId,
+              toBucketId: bucketToId
+            }));
+            if (moveTask.rejected.match(result)) {
+              showFailureNotification('Move failed', result.payload as string);
+            }
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          } catch (error) {
+            showFailureNotification('Move failed', 'An unexpected error occurred');
           }
         }
       }

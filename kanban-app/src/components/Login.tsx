@@ -1,12 +1,14 @@
-import { Center, Paper, TextInput, Text, Button, Stack } from '@mantine/core';
+import { Center, Paper, TextInput, Text, Button, Stack, Loader } from '@mantine/core';
 import { isNotEmpty, useForm } from '@mantine/form';
-import axios from 'axios';
-import { consts } from '../consts.ts';
-import { useDispatch } from 'react-redux';
-import { assignUserState } from '../lib/redux/UserStateSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginUser } from '../lib/redux/UserStateSlice';
+import { RootState, AppDispatch } from '../lib/redux/redux-store';
+import { showFailureNotification } from '../lib/notifications';
+import { useEffect } from 'react';
 
 function Login() {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
+  const { isLoading, error } = useSelector((state: RootState) => state.userState);
 
   const form = useForm({
     mode: 'uncontrolled',
@@ -20,12 +22,14 @@ function Login() {
     }
   });
 
-  async function submitLoginForm(values: typeof form.values) {
-    const client = axios.create({ withCredentials: true, baseURL: consts.API_URL, validateStatus: () => true });
-    const resp = await client.post('/login/', values);
-    if (resp.status == 200) {
-      dispatch(assignUserState(resp.data));
+  useEffect(() => {
+    if (error) {
+      showFailureNotification('Login Failed', error);
     }
+  }, [error]);
+
+  async function submitLoginForm(values: typeof form.values) {
+    await dispatch(loginUser(values));
   }
 
   return(
@@ -38,6 +42,7 @@ function Login() {
               placeholder='username'
               key={form.key('username')}
               {...form.getInputProps('username')}
+              disabled={isLoading}
             />
 
             <TextInput
@@ -45,12 +50,19 @@ function Login() {
               placeholder='password'
               key={form.key('password')}
               {...form.getInputProps('password')}
+              disabled={isLoading}
             />
 
-            <Center><Button
-              disabled={(form.getValues().username == '') || (form.getValues().password == '')}
-              type='submit'
-              variant='filled'>Login</Button></Center>
+            <Center>
+              <Button
+                disabled={isLoading || form.getValues().username === '' || form.getValues().password === ''}
+                type='submit'
+                variant='filled'
+                leftSection={isLoading ? <Loader size="xs" /> : undefined}
+              >
+                {isLoading ? 'Logging in...' : 'Login'}
+              </Button>
+            </Center>
           </Stack>
         </form>
       </Paper>

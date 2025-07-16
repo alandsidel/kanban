@@ -4,19 +4,21 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Button, Center, Container, Divider, Modal, SegmentedControl, Textarea, TextInput } from '@mantine/core';
 import { useDispatch, useSelector } from 'react-redux';
-import { setProject } from '../lib/redux/UserStateSlice.ts';
+import { setProject } from '../lib/redux/UserStateSlice';
 import { useForm } from '@mantine/form';
-import { assignProjectState, clearProjectState } from '../lib/redux/ProjectStateSlice';
+import { fetchProjectBuckets } from '../lib/redux/ProjectStateSlice';
 import { useDisclosure } from '@mantine/hooks';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faFolderPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { RootState } from '../lib/redux/redux-store.ts';
+import { RootState, AppDispatch } from '../lib/redux/redux-store.ts';
 import { showFailureNotification, showSuccessNotification } from '../lib/notifications.ts';
 import { useDroppable } from '@dnd-kit/core';
+import { useNavigate } from 'react-router';
 
 function Navbar() {
-  const dispatch = useDispatch();
-  const [projects, setProjects]     = useState<Array<ProjectItemType>>([]);
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+  const [projects, setProjects] = useState<Array<ProjectItemType>>([]);
   const [newProjectModalOpened, newProjectModalCallbacks] = useDisclosure(false);
   const [newTaskModalOpened, newTaskModalCallbacks] = useDisclosure(false);
   const user = useSelector((state: RootState) => state.userState);
@@ -65,20 +67,9 @@ function Navbar() {
     }
   }
 
-  async function fetchBucketsForProject(projectId: string) {
-    const client = axios.create({ withCredentials: true, baseURL: consts.API_URL, validateStatus: () => true});
-    const resp = await client.get('/buckets/' + projectId);
-
-    if (resp.status === 200) {
-      dispatch(assignProjectState(resp.data));
-    } else {
-      dispatch(clearProjectState());
-    }
-  }
-
   async function switchProjects(id: string) {
     dispatch(setProject(id));
-    await fetchBucketsForProject(id);
+    navigate('/projects/' + id);
   }
 
   async function createNewProject(v:{name: string}) {
@@ -103,7 +94,11 @@ function Navbar() {
       showSuccessNotification('Success', 'New task successfully created!');
       newTaskModalCallbacks.close();
       newTaskForm.reset();
-      fetchBucketsForProject(user.activeProject!);
+
+      // Refresh the current project's buckets
+      if (user.activeProject) {
+        dispatch(fetchProjectBuckets(user.activeProject));
+      }
     } else {
       showFailureNotification(resp.data.msg, resp.data.detail);
     }
@@ -151,6 +146,7 @@ function Navbar() {
       <SegmentedControl
         orientation='vertical'
         fullWidth
+        value={user.activeProject || ''}
         data={projects.map((project) => {return {value: project.id.toString(), label: project.name}})}
         onChange={switchProjects} />
 
