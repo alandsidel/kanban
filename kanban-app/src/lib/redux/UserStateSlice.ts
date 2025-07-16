@@ -52,16 +52,16 @@ export const logoutUser = createAsyncThunk(
 // Async thunk for auth check
 export const checkAuth = createAsyncThunk(
   'user/checkAuth',
-  async (_, { rejectWithValue }) => {
+  async () => {
     try {
       const resp = await createAxiosAPIClient().get('/authcheck/');
       if (resp.status === 200) {
         return resp.data;
       } else {
-        return rejectWithValue('Auth check failed');
+        return null;
       }
-    } catch (error) {
-      return rejectWithValue(appendErrorDetail('Network error occurred', error));
+    } catch {
+      return null;
     }
   }
 );
@@ -89,26 +89,34 @@ const UserStateSlice = createSlice({
       .addCase(logoutUser.fulfilled, () => {
         return initialState;
       })
-      // Pending states
+      // Login fulfilled - update user state
+      .addCase(loginUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.error = null;
+        Object.assign(state, action.payload);
+      })
+      // Auth check fulfilled - handle both success and silent failure
+      .addCase(checkAuth.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.error = null;
+        if (action.payload) {
+          Object.assign(state, action.payload);
+        } else {
+          // Silent failure - clear user state
+          return initialState;
+        }
+      })
+      // Pending states (checkAuth should not set loading for silent operation)
       .addMatcher(
-        isAnyOf(loginUser.pending, logoutUser.pending, checkAuth.pending),
+        isAnyOf(loginUser.pending, logoutUser.pending),
         (state) => {
           state.isLoading = true;
           state.error = null;
         }
       )
-      // Login/checkAuth fulfilled - update user state
+      // Login/logout rejected cases (excluding checkAuth)
       .addMatcher(
-        isAnyOf(loginUser.fulfilled, checkAuth.fulfilled),
-        (state, action) => {
-          state.isLoading = false;
-          state.error = null;
-          Object.assign(state, action.payload);
-        }
-      )
-      // All rejected cases
-      .addMatcher(
-        isAnyOf(loginUser.rejected, logoutUser.rejected, checkAuth.rejected),
+        isAnyOf(loginUser.rejected, logoutUser.rejected),
         (state, action) => {
           state.isLoading = false;
           state.error = action.payload as string;

@@ -14,12 +14,10 @@ import { useDispatch } from 'react-redux';
 import { DndContext, DragEndEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPersonWalkingDashedLineArrowRight } from '@fortawesome/free-solid-svg-icons';
-import { clearUserState } from './lib/redux/UserStateSlice';
+import { logoutUser } from './lib/redux/UserStateSlice';
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 import './styles/style.css';
-import axios from 'axios';
-import { consts } from './consts.ts';
 
 function App() {
   const user = useSelector((state: RootState) => state.userState);
@@ -85,9 +83,7 @@ function App() {
   }
 
   async function logout() {
-    const client = axios.create({ withCredentials: true, baseURL: consts.API_URL, validateStatus: () => true });
-    await client.post('/logout/');
-    dispatch(clearUserState());
+    await dispatch(logoutUser());
     dispatch(clearProjectState());
   }
 
