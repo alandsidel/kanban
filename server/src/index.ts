@@ -84,6 +84,7 @@ async function enforceSecurity(req:Request, res:Response, next:NextFunction) {
       case (req.url === '/index.html'):
       case (req.url.indexOf('/assets/') === 0):
       case (req.url.indexOf('/api/login') === 0):
+      case (req.url.indexOf('/api/logout') === 0):
       case (req.url.indexOf('/api/authcheck') === 0):
       case (req.url.indexOf('/api/signup') === 0):
         return next();
@@ -197,15 +198,10 @@ app.post('/api/login', async (req:Request, res:Response) => {
   }
 });
 
-app.get('/api/logout', async (req:Request, res:Response) => {
+app.post('/api/logout', async (req:Request, res:Response) => {
   try {
-    if (!req.session.username) {
-      res.status(400).send('Not logged in');
-      return;
-    }
 
     req.session.destroy(() => {});
-
     res.clearCookie('sessionid');
     res.status(200).send('ok');
     return;

@@ -18,6 +18,8 @@ import { clearUserState } from './lib/redux/UserStateSlice';
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 import './styles/style.css';
+import axios from 'axios';
+import { consts } from './consts.ts';
 
 function App() {
   const user = useSelector((state: RootState) => state.userState);
@@ -82,7 +84,9 @@ function App() {
     }
   }
 
-  function logout() {
+  async function logout() {
+    const client = axios.create({ withCredentials: true, baseURL: consts.API_URL, validateStatus: () => true });
+    await client.post('/logout/');
     dispatch(clearUserState());
     dispatch(clearProjectState());
   }
