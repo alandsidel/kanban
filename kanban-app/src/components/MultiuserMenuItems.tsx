@@ -6,14 +6,17 @@ import { faPersonWalkingDashedLineArrowRight } from '@fortawesome/free-solid-svg
 import { faAddressBook } from '@fortawesome/free-solid-svg-icons';
 import { logoutUser } from '../lib/redux/UserStateSlice.ts';
 import { clearProjectState } from '../lib/redux/ProjectStateSlice.ts';
+import { useNavigate } from 'react-router';
 
 function MultiuserMenuItems() {
   const user = useSelector((state: RootState) => state.userState);
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
 
   async function logout() {
     await dispatch(logoutUser());
     dispatch(clearProjectState());
+    navigate('/');
   }
 
   async function manageUsers() {
