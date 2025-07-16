@@ -5,17 +5,27 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../lib/redux/redux-store';
 import { fetchProjectBuckets } from '../lib/redux/ProjectStateSlice';
+import { setProject } from '../lib/redux/UserStateSlice';
 
 function Dash() {
   const dispatch = useDispatch<AppDispatch>();
   const { projectId } = useParams<{ projectId: string }>();
   const { buckets, isLoading, error, currentProjectId } = useSelector((state: RootState) => state.projectState);
+  const user = useSelector((state: RootState) => state.userState);
 
   useEffect(() => {
-    if (projectId && projectId !== currentProjectId) {
-      dispatch(fetchProjectBuckets(projectId));
+    if (projectId) {
+      // Update Redux state to match URL
+      if (user.activeProject !== projectId) {
+        dispatch(setProject(projectId));
+      }
+
+      // Fetch buckets if needed
+      if (projectId !== currentProjectId) {
+        dispatch(fetchProjectBuckets(projectId));
+      }
     }
-  }, [projectId, currentProjectId, dispatch]);
+  }, [projectId, currentProjectId, user.activeProject, dispatch]);
 
   if (!projectId) {
     return (

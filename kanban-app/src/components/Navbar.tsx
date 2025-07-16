@@ -146,6 +146,7 @@ function Navbar() {
       <SegmentedControl
         orientation='vertical'
         fullWidth
+        value={user.activeProject || ''}
         data={projects.map((project) => {return {value: project.id.toString(), label: project.name}})}
         onChange={switchProjects} />
 
