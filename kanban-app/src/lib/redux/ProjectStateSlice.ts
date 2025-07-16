@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction, isAnyOf } from '@reduxjs/toolkit';
-import axios from 'axios';
-import { consts } from '../../consts';
+import { appendErrorDetail, createAxiosAPIClient } from '../../util/JunkDrawer';
 
 export type BucketTask = {
   id: number,
@@ -35,27 +34,12 @@ const initialState: ProjectState = {
   currentProjectId: null
 };
 
-// Helper function to create axios client
-const createClient = () => axios.create({
-  withCredentials: true,
-  baseURL: consts.API_URL,
-  validateStatus: () => true
-});
-
-function appendErrorDetail(msg: string, error: unknown): string {
-  if (error instanceof Error) {
-    return msg + ': ' + error.message;
-  } else {
-    return msg;
-  }
-}
-
 // Async thunk for fetching project buckets
 export const fetchProjectBuckets = createAsyncThunk(
   'project/fetchBuckets',
   async (projectId: string, { rejectWithValue }) => {
     try {
-      const resp = await createClient().get(`/buckets/${projectId}`);
+      const resp = await createAxiosAPIClient().get(`/buckets/${projectId}`);
       if (resp.status === 200) {
         return { buckets: resp.data, projectId };
       } else {
@@ -72,7 +56,7 @@ export const updateTask = createAsyncThunk(
   'project/updateTask',
   async (params: { taskId: number; name: string; description: string }, { rejectWithValue }) => {
     try {
-      const resp = await createClient().post(`/task/${params.taskId}`, {
+      const resp = await createAxiosAPIClient().post(`/task/${params.taskId}`, {
         name: params.name,
         description: params.description
       });
@@ -92,7 +76,7 @@ export const moveTask = createAsyncThunk(
   'project/moveTask',
   async (params: { taskId: number; fromBucketId: number; toBucketId: number }, { rejectWithValue }) => {
     try {
-      const resp = await createClient().post(`/movetask/${params.taskId}/${params.fromBucketId}/${params.toBucketId}`);
+      const resp = await createAxiosAPIClient().post(`/movetask/${params.taskId}/${params.fromBucketId}/${params.toBucketId}`);
       if (resp.status === 200) {
         return resp.data;
       } else {
@@ -109,7 +93,7 @@ export const deleteTask = createAsyncThunk(
   'project/deleteTask',
   async (params: { taskId: number; bucketId: number }, { rejectWithValue }) => {
     try {
-      const resp = await createClient().delete(`/task/${params.bucketId}/${params.taskId}`);
+      const resp = await createAxiosAPIClient().delete(`/task/${params.bucketId}/${params.taskId}`);
       if (resp.status === 200) {
         return resp.data;
       } else {
