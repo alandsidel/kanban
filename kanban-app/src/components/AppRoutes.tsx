@@ -5,6 +5,7 @@ function AppRoutes() {
 
   return(
     <Routes>
+      <Route path='/projects/:projectId' element={<Dash/>} />
       <Route path='*' element={<Dash/>} />
     </Routes>
   );
