@@ -42,6 +42,14 @@ const createClient = () => axios.create({
   validateStatus: () => true
 });
 
+function appendErrorDetail(msg: string, error: unknown): string {
+  if (error instanceof Error) {
+    return msg + ': ' + error.message;
+  } else {
+    return msg;
+  }
+}
+
 // Async thunk for fetching project buckets
 export const fetchProjectBuckets = createAsyncThunk(
   'project/fetchBuckets',
@@ -53,9 +61,8 @@ export const fetchProjectBuckets = createAsyncThunk(
       } else {
         return rejectWithValue('Failed to fetch project buckets');
       }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      return rejectWithValue('Network error occurred');
+      return rejectWithValue(appendErrorDetail('Network error occurred', error));
     }
   }
 );
@@ -74,9 +81,8 @@ export const updateTask = createAsyncThunk(
       } else {
         return rejectWithValue(resp.data?.detail || 'Failed to update task');
       }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      return rejectWithValue('Network error occurred');
+      return rejectWithValue(appendErrorDetail('Network error occurred', error));
     }
   }
 );
@@ -92,9 +98,8 @@ export const moveTask = createAsyncThunk(
       } else {
         return rejectWithValue(resp.data?.detail || 'Failed to move task');
       }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      return rejectWithValue('Network error occurred');
+      return rejectWithValue(appendErrorDetail('Network error occurred', error));
     }
   }
 );
@@ -110,9 +115,8 @@ export const deleteTask = createAsyncThunk(
       } else {
         return rejectWithValue(resp.data?.detail || 'Failed to delete task');
       }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      return rejectWithValue('Network error occurred');
+      return rejectWithValue(appendErrorDetail('Network error occurred', error));
     }
   }
 );
