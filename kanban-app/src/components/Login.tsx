@@ -4,11 +4,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { loginUser } from '../lib/redux/UserStateSlice';
 import { RootState, AppDispatch } from '../lib/redux/redux-store';
 import { showFailureNotification } from '../lib/notifications';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 function Login() {
   const dispatch = useDispatch<AppDispatch>();
-  const { isLoading, error } = useSelector((state: RootState) => state.userState);
+  const { error } = useSelector((state: RootState) => state.userState);
+  const [loggingIn, setLoggingIn] = useState(false);
 
   const form = useForm({
     mode: 'uncontrolled',
@@ -24,11 +25,15 @@ function Login() {
 
   useEffect(() => {
     if (error) {
+      setLoggingIn(false);
+      form.reset();
       showFailureNotification('Login Failed', error);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error]);
 
   async function submitLoginForm(values: typeof form.values) {
+    setLoggingIn(true);
     await dispatch(loginUser(values));
   }
 
@@ -42,7 +47,7 @@ function Login() {
               placeholder='username'
               key={form.key('username')}
               {...form.getInputProps('username')}
-              disabled={isLoading}
+              disabled={loggingIn}
             />
 
             <TextInput
@@ -50,17 +55,17 @@ function Login() {
               placeholder='password'
               key={form.key('password')}
               {...form.getInputProps('password')}
-              disabled={isLoading}
+              disabled={loggingIn}
             />
 
             <Center>
               <Button
-                disabled={isLoading || form.getValues().username === '' || form.getValues().password === ''}
+                disabled={loggingIn || form.getValues().username === '' || form.getValues().password === ''}
                 type='submit'
                 variant='filled'
-                leftSection={isLoading ? <Loader size="xs" /> : undefined}
+                leftSection={loggingIn ? <Loader size="xs" /> : undefined}
               >
-                {isLoading ? 'Logging in...' : 'Login'}
+                {loggingIn ? 'Logging in...' : 'Login'}
               </Button>
             </Center>
           </Stack>

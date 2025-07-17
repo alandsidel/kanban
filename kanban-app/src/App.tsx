@@ -82,7 +82,10 @@ function App() {
 
   if (!user.username) {
     return (
-      <Login />
+      <>
+        <Login />
+        <Notifications />
+      </>
     );
   } else {
     return (

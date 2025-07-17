@@ -3,19 +3,19 @@ import { appendErrorDetail, createAxiosAPIClient } from '../../util/JunkDrawer';
 
 type UserState = {
   username: string,
+  email: string,
   isAdmin: boolean,
   isElectron: boolean,
   activeProject: string|null,
-  isLoading: boolean,
   error: string | null,
 }
 
 const initialState: UserState = {
   username: '',
+  email: '',
   isAdmin: false,
   isElectron: false,
   activeProject: null,
-  isLoading: false,
   error: null
 };
 
@@ -76,7 +76,7 @@ const UserStateSlice = createSlice({
     clearUserState: () => {
       return initialState;
     },
-    setProject: (state, action: PayloadAction<string>) => {
+    setProject: (state, action: PayloadAction<string | null>) => {
       return {...state, activeProject: action.payload};
     },
     clearError: (state) => {
@@ -85,40 +85,24 @@ const UserStateSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Logout fulfilled - clear user state
       .addCase(logoutUser.fulfilled, () => {
         return initialState;
       })
-      // Login fulfilled - update user state
       .addCase(loginUser.fulfilled, (state, action) => {
-        state.isLoading = false;
         state.error = null;
         Object.assign(state, action.payload);
       })
-      // Auth check fulfilled - handle both success and silent failure
       .addCase(checkAuth.fulfilled, (state, action) => {
-        state.isLoading = false;
         state.error = null;
         if (action.payload) {
           Object.assign(state, action.payload);
         } else {
-          // Silent failure - clear user state
           return initialState;
         }
       })
-      // Pending states (checkAuth should not set loading for silent operation)
-      .addMatcher(
-        isAnyOf(loginUser.pending, logoutUser.pending),
-        (state) => {
-          state.isLoading = true;
-          state.error = null;
-        }
-      )
-      // Login/logout rejected cases (excluding checkAuth)
       .addMatcher(
         isAnyOf(loginUser.rejected, logoutUser.rejected),
         (state, action) => {
-          state.isLoading = false;
           state.error = action.payload as string;
         }
       );
