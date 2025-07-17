@@ -1,4 +1,4 @@
-import { Flex, Paper, Text, Center, SimpleGrid, Loader } from '@mantine/core';
+import { Flex, Paper, Text, Center, SimpleGrid } from '@mantine/core';
 import { DroppableBucket } from './DroppableBucket';
 import { useParams } from 'react-router';
 import { useEffect } from 'react';
@@ -10,7 +10,7 @@ import { setProject } from '../lib/redux/UserStateSlice';
 function Dash() {
   const dispatch = useDispatch<AppDispatch>();
   const { projectId } = useParams<{ projectId: string }>();
-  const { buckets, isLoading, error, currentProjectId } = useSelector((state: RootState) => state.projectState);
+  const { buckets, currentProjectId } = useSelector((state: RootState) => state.projectState);
   const user = useSelector((state: RootState) => state.userState);
 
   useEffect(() => {
@@ -36,24 +36,6 @@ function Dash() {
           </Paper>
         </Center>
       </Flex>
-    );
-  }
-
-  if (isLoading) {
-    return (
-      <Center>
-        <Loader />
-      </Center>
-    );
-  }
-
-  if (error) {
-    return (
-      <Center>
-        <Paper shadow='xs' radius='lg' withBorder p='md'>
-          <Text c='red'>Error: {error}</Text>
-        </Paper>
-      </Center>
     );
   }
 

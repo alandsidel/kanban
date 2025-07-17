@@ -1,8 +1,8 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPersonWalkingDashedLineArrowRight } from '@fortawesome/free-solid-svg-icons';
+
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../lib/redux/redux-store.ts';
-
-import { faPersonWalkingDashedLineArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { faAddressBook } from '@fortawesome/free-solid-svg-icons';
 import { logoutUser } from '../lib/redux/UserStateSlice.ts';
 import { clearProjectState } from '../lib/redux/ProjectStateSlice.ts';
@@ -20,20 +20,21 @@ function MultiuserMenuItems() {
   }
 
   async function manageUsers() {
+    navigate('/user-manager');
   }
 
   return(
     <div>
       <FontAwesomeIcon
-        title="Logout"
+        title='Logout'
         style={{cursor: 'pointer'}}
-        pull="right"
+        pull='right'
         onClick={logout}
         icon={faPersonWalkingDashedLineArrowRight} />
       {user.isAdmin ? (<FontAwesomeIcon
-                         title="Manage users"
+                         title='Manage users'
                          style={{cursor: 'pointer'}}
-                         pull="right"
+                         pull='right'
                          onClick={manageUsers}
                          icon={faAddressBook} />) : ''}
     </div>
