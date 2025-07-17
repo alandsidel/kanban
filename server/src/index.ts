@@ -169,7 +169,6 @@ app.get('/api/authcheck', async (req:Request, res:Response) => {
     res.status(401).send('logged out');
     return;
   }
-  return;
 });
 
 app.post('/api/login', async (req:Request, res:Response) => {
@@ -193,7 +192,6 @@ app.post('/api/login', async (req:Request, res:Response) => {
       return;
 
     } else {
-
       throw new Error(genericFailureMessage);
     }
   } catch(e) {
