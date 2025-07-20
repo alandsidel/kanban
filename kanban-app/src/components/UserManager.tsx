@@ -143,7 +143,7 @@ function UserManager() {
           ))}
 
           <Table.Tr>
-            <Table.Td colSpan={4}>
+            <Table.Td colSpan={6}>
             <Center><strong>Add New User</strong></Center>
             </Table.Td>
           </Table.Tr>
