@@ -6,7 +6,8 @@ import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { v4 as uuid } from 'uuid';
 import { authenticateUser, isNumeric, isPositiveInteger, canUserModifyProject, canUserModifyTask,
-         getTasksForUser } from './lib/utils.js';
+         getTasksForUser,
+         generatePasswordRec} from './lib/utils.js';
 import session from 'express-session';
 import { KnexSessionStore } from './lib/KnexSessionStore.js';
 import { SqliteError } from 'better-sqlite3';
@@ -529,6 +530,10 @@ app.post('/api/task/:taskId', async (req:Request, res:Response) => {
 //#endregion
 
 //#region admin api routes
+async function getUsers() {
+  return await db('users').select('username', 'email', 'is_admin').orderBy('username');
+}
+
 app.get('/api/admin/users', async (req:Request, res:Response) => {
   try {
     if (!req.session.isAdmin) {
@@ -536,13 +541,104 @@ app.get('/api/admin/users', async (req:Request, res:Response) => {
       return;
     }
 
-    const users = await db('users').select('username', 'is_admin').orderBy('username');
-    res.status(200).json(users);
+    res.status(200).json(await getUsers());
     return;
 
   } catch (e) {
     console.log(e);
     res.status(500).send('Failed fetching users');
+    return;
+  }
+});
+
+app.post('/api/admin/users/:username/set-admin/', async (req:Request, res:Response) => {
+  try {
+    if (!req.session.isAdmin) {
+      res.status(403).send('Forbidden');
+      return;
+    }
+
+    if ((!req.params.username) || (!req.params.username.trim())) {
+      throw new Error('Invalid request');
+    }
+
+    if (req.params.username.trim() === req.session.username) {
+      throw new Error('Cannot toggle own admin status');
+    }
+
+    await db('users').update({is_admin: !!req.body.is_admin}).where({username: req.params.username.trim()});
+    res.status(200).json(await getUsers());
+  } catch (e) {
+    console.log(e);
+    res.status(500).send('Failed setting admin status');
+    return;
+  }
+});
+
+app.delete('/api/admin/users/:username', async (req:Request, res:Response) => {
+  try {
+    if (!req.session.isAdmin) {
+      res.status(403).send('Forbidden');
+      return;
+    }
+
+    if ((!req.params.username) || (!req.params.username.trim())) {
+      throw new Error('Invalid request');
+    }
+
+    if (req.params.username.trim() === req.session.username) {
+      throw new Error('Cannot delete self');
+    }
+
+    await db('users').delete().where({username: req.params.username.trim()});
+    res.status(200).json(await getUsers());
+  } catch (e) {
+    console.log(e);
+    res.status(500).send('Failed to delete user');
+    return;
+  }
+});
+
+app.post('/api/admin/users/:username/set-email', async (req:Request, res:Response) => {
+  try {
+    if (!req.session.isAdmin) {
+      res.status(403).send('Forbidden');
+      return;
+    }
+
+    const email = req.body.email ? req.body.email.trim() : null;
+
+    await db('users').update({email: email}).where({username: req.params.username.trim()});
+    res.status(200).json(await getUsers());
+  } catch (e) {
+    console.log(e);
+    res.status(500).send('Failed to update user');
+    return;
+  }
+});
+
+app.put('/api/admin/users/:username/', async (req:Request, res:Response) => {
+  try {
+    if (!req.session.isAdmin) {
+      res.status(403).send('Forbidden');
+      return;
+    }
+
+    if ((!req.params.username?.trim()) || (!req.body.password))
+    {
+      res.status(400).send('Invalid request');
+      return;
+    }
+
+    const isAdmin  = !!req.body.is_admin;
+    const email    = req.body.email ? req.body.email.trim() : null;
+    const password = await generatePasswordRec(req.body.password);
+
+    await db('users').insert({username: req.params.username.trim(), is_admin: isAdmin, email: email, password: password});
+    res.status(200).json(await getUsers());
+  } catch (e) {
+    console.log(e);
+    res.status(500).send('Failed to create user');
     return;
   }
 });
