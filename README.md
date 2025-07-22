@@ -25,12 +25,10 @@ Buckets are created upon creation of a new project within the app; changing this
 On first run, the console will output a randomly generated password for the `admin` user.
 
 #### Known issues
-This project was originally created with a client/server model in mind, however when I decided to make it public I thought it would be more useful if it were a standalone, self-contained, single user app so I stopped working on the multiuser features.
-
-Because of this there is currently no way to change or reset passwords, add or delete users, or any of the other features you'd expect from a multiuser app aside from being able to log in.  All these features will probably come later if just to make this demo more feature complete.
+This is a work in progress.  At present the standalone version works well for a single user.  The multi-user client/server version is not yet feature complete.  Users can be created, deleted, and updated by an administrator and individual users can manage and use their own boards, but collaboration features are a work in progress.
 
 ### Running the standalone version
-Just poke your head into the releases on the right of the project homepage and download whichever is appropriate for your environment.  There are multiple formats available, targeting macOS, Windows, and Linux.  Only the Windows installer releases are tested by me at present.
+Just poke your head into the releases on the right of the project homepage and download whichever is appropriate for your environment.  There are multiple formats available, targeting macOS, Windows, and Linux.  Only the Windows installer and Linux `.deb` releases are tested by me at present, but all of them should work.
 
 ### Contributing
-I'm open to feature requests and bug reports, but not to pull requests at present; this project is primarily a portfolio project for me and, as such, it would be dishonest for me to include contributions from others.  By all means, make suggestions and point me towards documentation, but no PRs please.  At least for now.
+I'm open to feature requests and bug reports, but not to pull requests at present; this project is primarily a portfolio project for me and as such it would be dishonest for me to include contributions from others.  By all means, make suggestions, but no PRs please, at least for the time being.
