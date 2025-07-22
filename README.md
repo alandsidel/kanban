@@ -5,15 +5,19 @@ It has been wrapped in an Electron app as well for standalone usage on Windows, 
 
 The entire project was written for portfolio purposes, but I do use it for all of my own projects both personal and professional.
 
-I wrote the server and client entirely myself, and used the client as an opportunity to dip my toes into Redux.
+I wrote the server and client myself, and used the client as an opportunity to dip my toes into Redux.  I don't believe Redux is *appropriate* for the project, simple prop-drilling and callbacks are enough here, but I wanted to play with it a little to see how it works.
 
-The electron app was produced almost entirely by GitHub CoPilot, utilizing Claude Sonnet 4.  This was my first foray into using an LLM for development tasks, and it's certainly been an experience.  The code it produced seems mostly sane but it took a few days to get here thanks to the iterative prompting required.  It was very much like working with a junior dev, offering instructions and doing some code review.
+The electron app wrapper was produced almost entirely by GitHub CoPilot, utilizing Claude Sonnet 4.  This was my first foray into using an LLM for development tasks, and it's certainly been an experience.  The code it produced seems mostly sane but it took a few days to get here thanks to the iterative prompting required.  It was very much like working with a junior dev, offering instructions and doing some code review.
 
 I think it would have taken me longer to learn Electron myself, specifically electron-builder, than it took to use the AI.  Over the course of about three days I tried three different LLMs in Copilot (GPT, Sonnet 3.5, and Sonnet 4) and two different builders (electron-forge and electron-builder).
 
 Including the node.js Express server was a challenge thanks to the widespread use of native modules such as `better-sqlite3`, as well as dynamic node.js requires like `fs`.
 
 This entire project is released under the terms of the 0BSD license, availble in the LICENSE file.
+
+Since opening this repo, I've been managing development of this app, with this app.
+
+<img src="https://i.imgur.com/AKJCGCo.png" width="300px" />
 
 ### Running the client/server
 Currently there are no artifacts or packages for this, but I intend to change that soon.  Until then, simply get a copy of the source through your favorite method, be that cloning, downloading the archive, or doing a checkout, and build the client and server by running `npm run build` in the `server` directory.  This will build the React webapp, copy it into the server directory, and build the server.  From here you can run the server in dev or prod mode as you like, with `npm run dev` or `npm run run` -- I know this last one is a bit weird, I'll change it.
