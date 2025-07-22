@@ -551,30 +551,6 @@ app.get('/api/admin/users', async (req:Request, res:Response) => {
   }
 });
 
-app.post('/api/admin/users/:username/set-admin/', async (req:Request, res:Response) => {
-  try {
-    if (!req.session.isAdmin) {
-      res.status(403).send('Forbidden');
-      return;
-    }
-
-    if ((!req.params.username) || (!req.params.username.trim())) {
-      throw new Error('Invalid request');
-    }
-
-    if (req.params.username.trim() === req.session.username) {
-      throw new Error('Cannot toggle own admin status');
-    }
-
-    await db('users').update({is_admin: !!req.body.is_admin}).where({username: req.params.username.trim()});
-    res.status(200).json(await getUsers());
-  } catch (e) {
-    console.log(e);
-    res.status(500).send('Failed setting admin status');
-    return;
-  }
-});
-
 app.delete('/api/admin/users/:username', async (req:Request, res:Response) => {
   try {
     if (!req.session.isAdmin) {
@@ -599,24 +575,6 @@ app.delete('/api/admin/users/:username', async (req:Request, res:Response) => {
   }
 });
 
-app.post('/api/admin/users/:username/set-email', async (req:Request, res:Response) => {
-  try {
-    if (!req.session.isAdmin) {
-      res.status(403).send('Forbidden');
-      return;
-    }
-
-    const email = req.body.email ? req.body.email.trim() : null;
-
-    await db('users').update({email: email}).where({username: req.params.username.trim()});
-    res.status(200).json(await getUsers());
-  } catch (e) {
-    console.log(e);
-    res.status(500).send('Failed to update user');
-    return;
-  }
-});
-
 app.put('/api/admin/users/:username/', async (req:Request, res:Response) => {
   try {
     if (!req.session.isAdmin) {
@@ -635,6 +593,44 @@ app.put('/api/admin/users/:username/', async (req:Request, res:Response) => {
     const password = await generatePasswordRec(req.body.password);
 
     await db('users').insert({username: req.params.username.trim(), is_admin: isAdmin, email: email, password: password});
+    res.status(200).json(await getUsers());
+  } catch (e) {
+    console.log(e);
+    res.status(500).send('Failed to create user');
+    return;
+  }
+});
+
+app.post('/api/admin/users/:username/', async (req:Request, res:Response) => {
+  try {
+    if (!req.session.isAdmin) {
+      res.status(403).send('Forbidden');
+      return;
+    }
+
+    if ((!req.params.username?.trim()) || (req.params.username.trim() != req.body.username.trim()))
+    {
+      res.status(400).send('Invalid request');
+      return;
+    }
+
+    const curUsername = req.params.username.trim();
+    const newUsername = req.body.username.trim();
+    const email       = req.body.email ? req.body.email.trim() : null;
+    const password    = req.body.password ? await generatePasswordRec(req.body.password) : null;
+    const isAdmin     = !!req.body.is_admin;
+
+    // When no password is provided, leave the password as-is; otherwise, change it.
+    if (!!password) {
+      await db('users')
+        .update({username: newUsername, email: email, password: password, is_admin: isAdmin})
+        .where({username: curUsername});
+    } else {
+      await db('users')
+        .update({username: newUsername, email: email, is_admin: isAdmin})
+        .where({username: curUsername});
+    }
+
     res.status(200).json(await getUsers());
   } catch (e) {
     console.log(e);
