@@ -1,4 +1,4 @@
-import { Flex, Paper, Text, Center, SimpleGrid } from '@mantine/core';
+import { Flex, Paper, Text, Center, SimpleGrid, Container, Group, Button } from '@mantine/core';
 import { DroppableBucket } from './DroppableBucket';
 import { useParams } from 'react-router';
 import { useEffect } from 'react';
@@ -24,6 +24,8 @@ function Dash() {
       if (projectId !== currentProjectId) {
         dispatch(fetchProjectBuckets(projectId));
       }
+    } else {
+      dispatch(setProject(null));
     }
   }, [projectId, currentProjectId, user.activeProject, dispatch]);
 
@@ -40,11 +42,13 @@ function Dash() {
   }
 
   return (
-    <SimpleGrid cols={buckets.length} spacing='sm'>
-      {buckets.map((bucket) => (
-        <DroppableBucket key={bucket.id} bucket={bucket}/>
-      ))}
-    </SimpleGrid>
+    <Container size='xl' mt={20}>
+      <SimpleGrid cols={buckets.length} spacing='sm'>
+        {buckets.map((bucket) => (
+          <DroppableBucket key={bucket.id} bucket={bucket}/>
+        ))}
+      </SimpleGrid>
+    </Container>
   );
 }
 

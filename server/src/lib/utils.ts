@@ -54,6 +54,16 @@ export async function canUserModifyProject(db:knex.Knex<any, unknown[]>, req: Re
   return c ? c.cnt == 1 : false;
 }
 
+export async function canUserAdminProject(db:knex.Knex<any, unknown[]>, req: Request, projectId: string): Promise<boolean> {
+  const c = await db('project_users')
+    .innerJoin('users', 'project_users.username', 'users.username')
+    .count('users.username as cnt')
+    .where({ 'users.username': req.session.username, project_id: projectId, 'project_users.is_admin': 1 }) // user is project admin
+    .orWhere({ 'users.username': req.session.username, project_id: projectId, 'users.is_admin': 1 }) // user is system admin
+    .first();
+  return c ? c.cnt == 1 : false;
+}
+
 export async function canUserModifyTask(db:knex.Knex<any, unknown[]>, req: Request, taskId: string): Promise<boolean> {
   const c = await db('project_users')
     .innerJoin('buckets', 'buckets.project_id', 'project_users.project_id')

@@ -7,7 +7,8 @@ import { fileURLToPath } from 'url';
 import { v4 as uuid } from 'uuid';
 import { authenticateUser, isNumeric, isPositiveInteger, canUserModifyProject, canUserModifyTask,
          getTasksForUser,
-         generatePasswordRec} from './lib/utils.js';
+         generatePasswordRec,
+         canUserAdminProject} from './lib/utils.js';
 import session from 'express-session';
 import { KnexSessionStore } from './lib/KnexSessionStore.js';
 import { SqliteError } from 'better-sqlite3';
@@ -221,9 +222,10 @@ app.get('/api/projects/', async (req:Request, res:Response) => {
     if (req.session.username) {
       const projects = await db('projects')
         .join('project_users', 'projects.id', 'project_users.project_id')
-        .select('projects.id', 'projects.name')
+        .select('projects.id', 'projects.name', 'project_users.is_admin')
         .where('project_users.username', '=', req.session.username)
         .orderBy('projects.name');
+
       res.status(200).json(projects);
       return;
     } else {
@@ -287,6 +289,47 @@ app.put('/api/projects/:projectName', async (req:Request, res:Response) => {
           errResponse.detail = e.code;
         break;
       }
+    } else if (e instanceof Error) {
+      errResponse.detail = e.message;
+    }
+
+    res.status(500).json(errResponse);
+    return;
+  }
+});
+
+app.delete('/api/projects/:projectId', async (req:Request, res:Response) => {
+  try {
+    if (req.session.username) {
+      const projectId = req.params.projectId.trim();
+
+      if (!projectId) {
+        res.status(400).send('Unknown project');
+        return;
+      }
+
+      if (!await canUserAdminProject(db, req, projectId)) {
+        res.status(400).send('Not authorized');
+        return;
+      }
+
+      await db('projects')
+        .where({id: projectId})
+        .delete();
+      res.status(200).send('Project deleted');
+      return;
+    }
+  } catch (e) {
+    console.log(e);
+    const errResponse = {
+      msg: 'Failed adding new project',
+      detail: 'Unknown error'
+    };
+
+    if (typeof e === 'string') {
+      errResponse.detail = e;
+    } else if (e instanceof SqliteError) {
+      errResponse.detail = 'SQLite error ' + e.code;
     } else if (e instanceof Error) {
       errResponse.detail = e.message;
     }
