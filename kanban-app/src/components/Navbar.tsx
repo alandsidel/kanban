@@ -150,6 +150,22 @@ function Navbar() {
   async function manageProjectUsers() {
   }
 
+  // This is here to only provide the button if the user is a project admin
+  // and also if the app is not running in Electron.
+  function getUsersButton() {
+    if (!user.isElectron) {
+      // check admin status
+      return (
+        <Button size='xs' mt='5'
+          leftSection={<FontAwesomeIcon icon={faUsers} />}
+          onClick={() => manageProjectUsers()}
+          disabled={!user.activeProject}>Users</Button>
+      );
+    } else {
+      return '';
+    }
+  }
+
   return (
     <>
       <Modal opened={deleteProjectModalOpened}
@@ -232,10 +248,7 @@ function Navbar() {
         onChange={switchProjects} />
 
       <Divider size='lg' label='manage' labelPosition='center'/>
-      <Button size='xs' mt='5'
-        leftSection={<FontAwesomeIcon icon={faUsers} />}
-        onClick={() => manageProjectUsers()}
-        disabled={!user.activeProject}>Users</Button>
+      {getUsersButton()}
 
       <Button size='xs' mt='5' color='red'
         leftSection={<FontAwesomeIcon icon={faTrash} />}
