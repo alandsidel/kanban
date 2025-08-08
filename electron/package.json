@@ -34,32 +34,29 @@
       "loading.html"
     ],
     "extraResources": "server-build",
-    "win": {
-      "target": [
-        "nsis"
-      ]
-    },
+    "win": { "target": [ "nsis" ] },
     "linux": {
       "target": [
         { "target": "AppImage", "arch": ["x64"] },
-        { "target": "deb",      "arch": ["x64"] },
+        { "target": "deb",      "arch": ["x64"],
+          "depends": [
+            "libnotify4",
+            "libsecret-1-0",
+            "libnss3",
+            "libatspi2.0-0",
+            "libdrm2",
+            "libxcomposite1",
+            "libxdamage1",
+            "libxrandr2",
+            "libgbm1",
+            "libxss1",
+            "libasound2"
+          ]
+        },
         { "target": "rpm",      "arch": ["x64"] },
         { "target": "tar.gz",   "arch": ["x64"] }
       ],
       "category": "Office",
-      "depends": [
-        "libnotify4",
-        "libsecret-1-0",
-        "libnss3",
-        "libatspi2.0-0",
-        "libdrm2",
-        "libxcomposite1",
-        "libxdamage1",
-        "libxrandr2",
-        "libgbm1",
-        "libxss1",
-        "libasound2"
-      ],
       "desktop": {
         "Name": "Kanban",
         "Comment": "Kanban board desktop app",
@@ -70,10 +67,7 @@
       "target": [
         {
           "target": "dmg",
-          "arch": [
-            "x64",
-            "arm64"
-          ]
+          "arch": [ "x64", "arm64" ]
         }
       ],
       "category": "public.app-category.productivity"
