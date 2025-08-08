@@ -1,4 +1,4 @@
-import { Flex, Paper, Text, Center, SimpleGrid, Container, Group, Button } from '@mantine/core';
+import { Flex, Paper, Text, Center, SimpleGrid, Container } from '@mantine/core';
 import { DroppableBucket } from './DroppableBucket';
 import { useParams } from 'react-router';
 import { useEffect } from 'react';
