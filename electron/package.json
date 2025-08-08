@@ -55,12 +55,9 @@
         "libxss1",
         "libasound2"
       ],
-      "category": "Office",
-      "desktop": {
-        "Name": "Kanban",
-        "Comment": "Kanban board desktop app",
-        "Categories": "Office;ProjectManagement;"
-      }
+      "name": "Kanban",
+      "description": "Kanban board desktop app",
+      "category": "Office"
     },
     "mac": {
       "target": [
