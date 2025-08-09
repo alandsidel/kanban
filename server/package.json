@@ -22,10 +22,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "check-git": "node -e \"const {execSync} = require('child_process'); try { const status = execSync('git status --porcelain', {encoding: 'utf8'}); const branch = execSync('git branch --show-current', {encoding: 'utf8'}).trim(); if (branch !== 'master') { console.error('Not on master branch'); process.exit(1); } } catch (e) { console.error('Git check failed:', e.message); process.exit(1); }\"",
     "check-app-build": "node -e \"const fs = require('fs'); if (!fs.existsSync('../kanban-app/dist')) { console.error('kanban-app not built. Run: cd ../kanban-app && npm run build'); process.exit(1); }\"",
-    "bump": "npm run check-git && npm version patch --no-git-tag-version",
     "tag": "node -e \"const pkg=require('./package.json'); require('child_process').execSync(`git tag server-v${pkg.version}`, {stdio:'inherit'})\"",
     "commit-version": "node -e \"const {execSync} = require('child_process'); const pkg=require('./package.json'); execSync('git add package.json package-lock.json', {stdio:'inherit'}); execSync('git commit -m \\\"bump server version to ' + pkg.version + '\\\"', {stdio:'inherit'})\"",
-    "release": "npm run check-app-build && npm run build-release && npm run bump && npm run commit-version && npm run tag"
+    "release": "npm run check-app-build && npm run build-release && npm run commit-version && npm run tag"
   },
   "dependencies": {
     "better-sqlite3": "11.9.1",

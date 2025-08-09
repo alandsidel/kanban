@@ -22,10 +22,9 @@
     "package": "npm run clean:dist && npm run build:electron && electron-builder",
     "check-git": "node -e \"const {execSync} = require('child_process'); try { const status = execSync('git status --porcelain', {encoding: 'utf8'}); const branch = execSync('git branch --show-current', {encoding: 'utf8'}).trim(); if (branch !== 'master') { console.error('Not on master branch'); process.exit(1); } } catch (e) { console.error('Git check failed:', e.message); process.exit(1); }\"",
     "check-server-build": "node -e \"const fs = require('fs'); if (!fs.existsSync('../server/build')) { console.error('Server not built. Run: cd ../server && npm run build-electron'); process.exit(1); }\"",
-    "bump": "npm run check-git && npm version patch --no-git-tag-version",
     "tag": "node -e \"const pkg=require('./package.json'); require('child_process').execSync(`git tag electron-v${pkg.version}`, {stdio:'inherit'})\"",
     "commit-version": "node -e \"const {execSync} = require('child_process'); const pkg=require('./package.json'); execSync('git add package.json package-lock.json', {stdio:'inherit'}); execSync('git commit -m \\\"bump kanban version to ' + pkg.version + '\\\"', {stdio:'inherit'})\"",
-    "release": "npm run check-server-build && npm run package && npm run bump && npm run commit-version && npm run tag"
+    "release": "npm run check-server-build && npm run package && npm run commit-version && npm run tag"
   },
   "build": {
     "appId": "com.kanban.app",
@@ -34,50 +33,20 @@
       "loading.html"
     ],
     "extraResources": "server-build",
-    "win": {
-      "target": [
-        "nsis"
-      ]
-    },
+    "win": {"target": ["nsis"] },
     "linux": {
       "target": [
-        {
-          "target": "AppImage",
-          "arch": [
-            "x64"
-          ]
-        },
-        {
-          "target": "deb",
-          "arch": [
-            "x64"
-          ]
-        },
-        {
-          "target": "rpm",
-          "arch": [
-            "x64"
-          ]
-        },
-        {
-          "target": "tar.gz",
-          "arch": [
-            "x64"
-          ]
-        }
+        { "target": "AppImage", "arch": ["x64"]},
+        { "target": "deb",      "arch": ["x64"] },
+        { "target": "rpm",      "arch": ["x64"] },
+        { "target": "tar.gz",   "arch": ["x64"] }
       ],
       "description": "Kanban board desktop app",
       "category": "Office"
     },
     "mac": {
       "target": [
-        {
-          "target": "dmg",
-          "arch": [
-            "x64",
-            "arm64"
-          ]
-        }
+        {"target": "dmg", "arch": ["x64", "arm64"] }
       ],
       "category": "public.app-category.productivity"
     },
