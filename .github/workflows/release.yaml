@@ -9,7 +9,7 @@ jobs:
   build-and-release:
     strategy:
       matrix:
-        os: [ubuntu-ubuntu-22.04, macos-14, windows-2022]
+        os: [ubuntu-22.04, macos-14, windows-2022]
         include:
           - os: ubuntu-22.04
             platform: linux
